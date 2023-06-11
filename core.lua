@@ -29,7 +29,7 @@ local function OnTooltipSetItem(tooltip)
 	end
 end
 
-local function Calculate(isManual)
+local function Calculate()
 	local categoryID = C_TradeSkillUI.GetCategories()
 	if (categoryID == 1548) then -- Protoform Synthesis
 		C_Timer.After(1, function()
@@ -46,40 +46,41 @@ local function Calculate(isManual)
 						if (currentPetName == petName) then
 							if (not owned) then
 								local reagents = C_TradeSkillUI.GetRecipeSchematic(recipeID, false).reagentSlotSchematics
-								local count = 0
 								for _, reagent in ipairs(reagents) do
-									if (isManual) then
-										PSJ_Account[reagent.reagents[1].itemID] = {}
-									end
-									local _, itemLink = GetItemInfo(reagent.reagents[1].itemID)
 									if (not PSJ_Account[reagent.reagents[1].itemID]) then
-										PSJ_Account[reagent.reagents[1].itemID] = {itemLink = itemLink, quantityRequired = 0}
-										PSJ_Account[reagent.reagents[1].itemID].quantityRequired = PSJ_Account[reagent.reagents[1].itemID].quantityRequired + reagent.quantityRequired
+										PSJ_Account[reagent.reagents[1].itemID] = {}
+										PSJ_Account[reagent.reagents[1].itemID] = {itemLink = "", quantityRequired = 0}
 									end
+									C_Item.RequestLoadItemDataByID(reagent.reagents[1].itemID)
+									C_Timer.After(0.25, function()
+										local _, itemLink = GetItemInfo(reagent.reagents[1].itemID)
+										PSJ_Account[reagent.reagents[1].itemID].itemLink = itemLink
+										PSJ_Account[reagent.reagents[1].itemID].quantityRequired = PSJ_Account[reagent.reagents[1].itemID].quantityRequired + reagent.quantityRequired
+									end)
 								end
+								print("Done calculating for "..currentPetName)
 							end
 						end
 					end
 				elseif (itemType == "Mount") then
 					local mountID = C_MountJournal.GetMountFromItem(itemID)
-					local collected = select(11, C_MountJournal.GetMountInfoByID(mountID))
+					local mountName, _, _, _, _, _, _, _, _, _, collected = C_MountJournal.GetMountInfoByID(mountID)
 					if (not collected) then
 						local reagents = C_TradeSkillUI.GetRecipeSchematic(recipeID, false).reagentSlotSchematics
-						local count = 0
 						for _, reagent in ipairs(reagents) do
+							if (not PSJ_Account[reagent.reagents[1].itemID]) then
+								PSJ_Account[reagent.reagents[1].itemID] = {}
+								PSJ_Account[reagent.reagents[1].itemID] = {itemLink = "", quantityRequired = 0}
+							end
 							C_Item.RequestLoadItemDataByID(reagent.reagents[1].itemID)
-							C_Timer.After(0.2, function()
-								if (isManual) then
-									PSJ_Account[reagent.reagents[1].itemID] = {}
-								end
+							C_Timer.After(0.25, function()
 								local _, itemLink = GetItemInfo(reagent.reagents[1].itemID)
-								if (not PSJ_Account[reagent.reagents[1].itemID]) then
-									PSJ_Account[reagent.reagents[1].itemID] = {itemLink = itemLink, quantityRequired = 0}
-									PSJ_Account[reagent.reagents[1].itemID].quantityRequired = PSJ_Account[reagent.reagents[1].itemID].quantityRequired + reagent.quantityRequired
-								end
+								PSJ_Account[reagent.reagents[1].itemID].itemLink = itemLink
+								PSJ_Account[reagent.reagents[1].itemID].quantityRequired = PSJ_Account[reagent.reagents[1].itemID].quantityRequired + reagent.quantityRequired
 							end)
 						end
 					end
+					print("Done calculating for "..mountName)
 				end
 			end
 		end)
@@ -97,12 +98,12 @@ e:SetScript("OnEvent", function(self, event, ...)
 			end
 		end
 	end
-	if (event == "PLAYER_INTERACTION_MANAGER_FRAME_SHOW") then
+	--[[if (event == "PLAYER_INTERACTION_MANAGER_FRAME_SHOW") then
 		local type = ...
 		if (type == 31) then
 			Calculate(false)
 		end
-	end
+	end]]
 end)
 
 TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, OnTooltipSetItem)
