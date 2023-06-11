@@ -88,7 +88,6 @@ local function Calculate()
 end
 
 e:RegisterEvent("ADDON_LOADED")
-e:RegisterEvent("PLAYER_INTERACTION_MANAGER_FRAME_SHOW")
 e:SetScript("OnEvent", function(self, event, ...)
 	if (event == "ADDON_LOADED") then
 		local addonLoaded = ...
@@ -98,12 +97,6 @@ e:SetScript("OnEvent", function(self, event, ...)
 			end
 		end
 	end
-	--[[if (event == "PLAYER_INTERACTION_MANAGER_FRAME_SHOW") then
-		local type = ...
-		if (type == 31) then
-			Calculate(false)
-		end
-	end]]
 end)
 
 TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, OnTooltipSetItem)
