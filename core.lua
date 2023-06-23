@@ -65,7 +65,6 @@ local function Calculate()
 				elseif (itemType == "Mount") then
 					local mountID = C_MountJournal.GetMountFromItem(itemID)
 					local mountName, _, _, _, _, _, _, _, _, _, collected = C_MountJournal.GetMountInfoByID(mountID)
-					print(collected)
 					if (collected ~= true) then
 						local reagents = C_TradeSkillUI.GetRecipeSchematic(recipeID, false).reagentSlotSchematics
 						for _, reagent in ipairs(reagents) do
