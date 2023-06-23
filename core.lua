@@ -58,14 +58,15 @@ local function Calculate()
 										PSJ_Account[reagent.reagents[1].itemID].quantityRequired = PSJ_Account[reagent.reagents[1].itemID].quantityRequired + reagent.quantityRequired
 									end)
 								end
-								print("Done calculating for "..currentPetName)
+								print("Done calculating for |cff58BB17"..currentPetName.."|r")
 							end
 						end
 					end
 				elseif (itemType == "Mount") then
 					local mountID = C_MountJournal.GetMountFromItem(itemID)
 					local mountName, _, _, _, _, _, _, _, _, _, collected = C_MountJournal.GetMountInfoByID(mountID)
-					if (not collected) then
+					print(collected)
+					if (collected ~= true) then
 						local reagents = C_TradeSkillUI.GetRecipeSchematic(recipeID, false).reagentSlotSchematics
 						for _, reagent in ipairs(reagents) do
 							if (not PSJ_Account[reagent.reagents[1].itemID]) then
@@ -79,8 +80,9 @@ local function Calculate()
 								PSJ_Account[reagent.reagents[1].itemID].quantityRequired = PSJ_Account[reagent.reagents[1].itemID].quantityRequired + reagent.quantityRequired
 							end)
 						end
+						print("Done calculating for |cff58BB17"..mountName.."|r")
 					end
-					print("Done calculating for "..mountName)
+					
 				end
 			end
 		end)
